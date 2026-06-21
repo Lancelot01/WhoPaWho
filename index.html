@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Who 怕 Who v0.26 MVP隱藏分版</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at center,#1b422d,#06110b 78%);font-family:'Microsoft JhengHei',Arial,sans-serif;color:#f6e8b7;overflow:hidden}#game{width:1920px;height:1080px;position:relative;transform-origin:top left}.seat{position:absolute;width:185px;height:270px;border:2px solid #b98b35;border-radius:18px;background:rgba(0,0,0,.46);box-shadow:0 0 18px rgba(255,190,70,.18);padding:9px;text-align:center;transition:.15s}.seat.current{box-shadow:0 0 34px #ffe071;border-color:#ffe071}.seat.targetable{cursor:pointer;outline:3px solid #5ee38d}.seat.defender{outline:4px solid #ff5b5b}.seat.attacker{outline:4px solid #ffcb54}.name{font-size:22px;font-weight:900;margin-bottom:5px}.stats{font-size:15px;line-height:1.35;color:#ffe9b1}.zones{display:flex;gap:8px;justify-content:center;margin-top:6px}.zone{width:72px;height:38px;border:1px solid #b98b35;border-radius:9px;background:rgba(255,220,120,.08);font-size:13px;line-height:1.25;padding-top:3px}.scoreZone{box-shadow:inset 0 0 10px rgba(255,210,75,.16)}.discardZone{box-shadow:inset 0 0 10px rgba(180,210,255,.16)}.card{width:112px;height:145px;margin:4px auto 8px;border-radius:14px;border:2px solid #f4d37b;background:linear-gradient(160deg,#f9ecc1,#c99745);color:#2b1708;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;box-shadow:0 6px 12px rgba(0,0,0,.45)}.back{background:linear-gradient(135deg,#2f1b07,#8a5a16);color:#f9e7a0}.card .animal{font-size:30px}.card .num{font-size:42px}.card.special{background:linear-gradient(160deg,#fff3d0,#d55)}.card.germ{background:linear-gradient(160deg,#e7ffe5,#46a35d)}.actionMarks{position:absolute;left:6px;right:6px;bottom:5px;display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:11px;line-height:1.05;background:rgba(0,0,0,.18);border-radius:8px;padding:3px}.actionMarks .ok{color:#0b7d25}.actionMarks .no{color:#b30000}.card,.battleCard{position:relative}.foxEye{position:absolute;right:8px;bottom:7px;font-size:24px;background:rgba(255,255,255,.35);border-radius:50%;padding:1px 5px}.battleCard .actionMarks{font-size:13px;bottom:7px}.battleCard .foxEye{font-size:28px}.greenAdd{color:#19e86d;text-shadow:0 0 8px #062;font-weight:900}
+#center{position:absolute;left:760px;top:372px;width:400px;height:310px;text-align:center}.deck{width:170px;height:230px;margin:0 auto;border-radius:18px;border:3px solid #f5d47a;background:linear-gradient(135deg,#34210d,#a26b19);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 0 28px rgba(255,210,92,.35)}.deckTitle{font-size:34px;font-weight:900}.deckCount{font-size:62px;font-weight:900}.turnInfo{margin-top:14px;font-size:24px;font-weight:900;color:#fff4ce}.modeInfo{margin-top:8px;font-size:18px;color:#bdebc9}#controls{position:absolute;left:520px;bottom:18px;width:880px;text-align:center}.btn{font-size:24px;font-weight:900;margin:6px;padding:14px 30px;border:0;border-radius:14px;background:#d7a33e;color:#201204;cursor:pointer;box-shadow:0 4px 0 #7b5518}.btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}.cancel{background:#8d6a35;color:#fff0bf}
+#helpBtn{position:absolute;left:26px;top:24px;width:58px;height:58px;border-radius:50%;border:2px solid #ffe071;background:rgba(0,0,0,.52);color:#ffe071;font-size:34px;font-weight:900;cursor:pointer;box-shadow:0 0 18px rgba(255,210,70,.25)}#moreBtn{position:absolute;right:26px;top:24px;width:58px;height:58px;border-radius:50%;border:2px solid #ffe071;background:rgba(0,0,0,.55);color:#ffe071;font-size:32px;font-weight:900;cursor:pointer;z-index:14;box-shadow:0 0 18px rgba(255,210,70,.25)}#moreMenu{position:absolute;right:26px;top:90px;width:240px;background:rgba(0,0,0,.78);border:2px solid #e3b85d;border-radius:14px;padding:8px;z-index:30;display:none}.menuItem{display:block;width:100%;margin:6px 0;padding:12px;border:0;border-radius:10px;background:#d7a33e;color:#201204;font-size:20px;font-weight:900;cursor:pointer}.menuItem:hover{filter:brightness(1.1)}#aiPanel{position:absolute;left:96px;top:24px;width:280px;height:58px;border:2px solid #9c793c;border-radius:14px;background:rgba(0,0,0,.50);padding:8px 12px;font-size:16px;color:#ffe9b1;display:flex;align-items:center;gap:10px}#aiPanel input{width:120px}#aiPanel b{color:#ffe071}#log{position:absolute;right:24px;bottom:24px;width:420px;height:300px;background:rgba(0,0,0,.50);border:2px solid #9c793c;border-radius:16px;padding:14px;overflow:auto;font-size:16px;line-height:1.45}.logTitle{font-size:22px;font-weight:900;margin-bottom:8px;color:#ffe071}
+#modal{position:absolute;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;z-index:20}.box{width:760px;max-height:860px;overflow:auto;background:#102016;border:3px solid #e3b85d;border-radius:22px;padding:24px;text-align:center;box-shadow:0 0 40px rgba(255,211,100,.35)}.box h2{margin-top:0;color:#ffe071}.choice{display:inline-block;margin:8px;padding:10px 16px;border-radius:12px;background:#2c593d;border:2px solid #a9d486;cursor:pointer}.choice:hover{background:#3d754f}.choice.on{outline:3px solid #ffe071;background:#5b6d30}.revealGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;text-align:left}.miniLine{padding:8px;border:1px solid #6b854e;border-radius:10px;background:rgba(255,255,255,.06)}.rules{text-align:left;font-size:18px;line-height:1.55}.rules h3{color:#ffe071;margin:12px 0 4px}.calcLine{font-size:20px;font-weight:900;color:#fff0bf;margin-top:6px}
+.killText{position:absolute;z-index:30;font-size:32px;font-weight:900;color:#ffdf74;text-shadow:0 0 12px #f00,0 0 20px #000;pointer-events:none;animation:killPop 1.05s ease-out forwards}@keyframes killPop{0%{transform:translate(-50%,-50%) scale(.55);opacity:0}22%{transform:translate(-50%,-80%) scale(1.2);opacity:1}100%{transform:translate(-50%,-140%) scale(.85);opacity:0}}.flyingCard{position:absolute;z-index:25;width:78px;height:100px;border-radius:12px;border:2px solid #f4d37b;background:linear-gradient(160deg,#f9ecc1,#c99745);color:#2b1708;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;box-shadow:0 0 18px rgba(255,225,120,.9);transition:transform .75s cubic-bezier(.2,.8,.25,1),opacity .75s;pointer-events:none}.flyingCard .animal{font-size:18px}.flyingCard .num{font-size:32px}.flyingCard.germ{background:linear-gradient(160deg,#e7ffe5,#46a35d)}.flyingCard.special{background:linear-gradient(160deg,#fff3d0,#d55)}.seat.flashWin{animation:flashWin .75s ease-out}.seat.flashLose{animation:flashLose .75s ease-out}@keyframes flashWin{0%,100%{filter:none}30%{filter:drop-shadow(0 0 24px #ffe071) brightness(1.35)}}@keyframes flashLose{0%,100%{filter:none}30%{filter:drop-shadow(0 0 22px #ff5353) brightness(1.25)}}
+#battleOverlay{position:absolute;inset:0;background:rgba(0,0,0,.80);display:none;align-items:center;justify-content:center;z-index:40;pointer-events:auto}.battleBox{width:1120px;height:600px;border:3px solid #e3b85d;border-radius:28px;background:radial-gradient(circle at center,#1d3b2b,#07110c 78%);box-shadow:0 0 55px rgba(255,220,95,.35);position:relative;text-align:center;padding:24px;overflow:hidden}.battleTitle{font-size:30px;font-weight:900;color:#ffe071;margin-bottom:10px;text-shadow:0 0 16px #000}.battleSub{font-size:18px;color:#cfe6c8;margin-bottom:10px}.battleArena{display:flex;align-items:center;justify-content:center;gap:70px;height:375px;position:relative}.battleSide{width:210px;text-align:center;position:relative;opacity:0;transform:translateY(25px)}.battleSide.in{animation:enterCard .55s ease-out forwards}.battleName{font-size:22px;font-weight:900;margin-bottom:10px;color:#fff0bf}.battleCard{width:168px;height:220px;margin:auto;border-radius:18px;border:3px solid #f4d37b;background:linear-gradient(160deg,#f9ecc1,#c99745);color:#2b1708;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;box-shadow:0 0 22px rgba(255,225,120,.8);position:relative;overflow:hidden}.battleCard.special{background:linear-gradient(160deg,#fff3d0,#d55)}.battleCard.germ{background:linear-gradient(160deg,#e7ffe5,#46a35d)}.battleCard .animal{font-size:34px}.battleCard .num{font-size:62px}.vsText{font-size:42px;font-weight:900;color:#ffdf74;text-shadow:0 0 18px #000}.sumBox{font-size:34px;font-weight:900;color:#ffdf74;text-shadow:0 0 15px #000;margin:0 auto 8px}.battleCard.killed{animation:cardHit .55s ease-in-out forwards}.battleCard.killed::after{content:'';position:absolute;width:260px;height:10px;background:linear-gradient(90deg,transparent,#ff2b2b,#fff,#ff2b2b,transparent);transform:rotate(-28deg);box-shadow:0 0 20px #f00;opacity:0;animation:slashCut .7s ease-out forwards}.battleResult{font-size:30px;font-weight:900;color:#ffdf74;opacity:0;text-shadow:0 0 15px #000}.battleResult.show{animation:resultShow .6s ease-out forwards}@keyframes enterCard{to{opacity:1;transform:translateY(0)}}@keyframes slashCut{0%{left:-230px;top:190px;opacity:0}20%{opacity:1}100%{left:160px;top:50px;opacity:0}}@keyframes cardHit{0%{transform:translateX(0) rotate(0);filter:none}35%{transform:translateX(-12px) rotate(-3deg);filter:brightness(1.45)}100%{transform:translateX(0) rotate(0);filter:grayscale(.55) brightness(.75)}}@keyframes resultShow{from{opacity:0;transform:translateY(15px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+#start{position:absolute;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:50}.startBox{width:620px;background:#102016;border:3px solid #e3b85d;border-radius:22px;padding:26px;text-align:center}.startBox h1{margin:0 0 12px;color:#ffe071}.startBox p{font-size:18px;line-height:1.5}.setupRow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px auto;max-width:460px;font-size:20px}.setupRow select,.setupRow input{font-size:20px}.setupHint{font-size:15px;color:#cfe6c8;margin-top:8px;line-height:1.45}
+
+#devLock{position:absolute;right:96px;top:24px;width:58px;height:58px;border-radius:50%;border:2px solid #ffe071;background:rgba(0,0,0,.55);color:#ffe071;font-size:30px;font-weight:900;cursor:pointer;z-index:12;box-shadow:0 0 18px rgba(255,210,70,.25)}
+#devPanel{position:absolute;right:166px;top:24px;width:500px;max-height:990px;overflow:auto;background:rgba(0,0,0,.78);border:2px solid #e3b85d;border-radius:18px;padding:14px;z-index:11;display:none;color:#ffe9b1;font-size:15px;box-shadow:0 0 24px rgba(255,210,70,.22)}
+#devPanel h3{margin:4px 0 8px;color:#ffe071;font-size:22px}#devPanel h4{margin:12px 0 5px;color:#ffdf74;font-size:17px}.devRow{display:grid;grid-template-columns:170px 1fr 58px;align-items:center;gap:8px;margin:5px 0}.devRow input[type=range]{width:100%}.devRow input[type=number]{width:58px;background:#1d2e21;color:#ffe9b1;border:1px solid #a47d36;border-radius:7px;padding:4px}.devBtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.devSmall{font-size:13px;color:#cfe6c8;line-height:1.35}.devStat{border:1px solid #765928;border-radius:10px;background:rgba(255,255,255,.06);padding:8px;margin-top:8px;line-height:1.45}
+#levelPanel{position:absolute;right:170px;top:24px;width:250px;height:58px;border:2px solid #9c793c;border-radius:14px;background:rgba(0,0,0,.50);padding:8px 12px;font-size:16px;color:#ffe9b1;display:flex;align-items:center;gap:10px}#levelPanel select{font-size:18px;background:#1d2e21;color:#ffe9b1;border:1px solid #a47d36;border-radius:8px;padding:4px}.battleCard.unknown{background:linear-gradient(135deg,#060606,#2a2a2a);color:#f9e7a0;border-color:#999;box-shadow:0 0 22px rgba(0,0,0,.9),0 0 12px rgba(255,255,255,.16)}
+
+.killStreakText{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:80;font-size:72px;font-weight:1000;color:#ffdf74;text-shadow:0 0 12px #000,0 0 24px #f00,0 0 40px #ffdf74;pointer-events:none;animation:streakBoom 1.65s ease-out forwards;letter-spacing:2px;text-align:center}
+.killStreakText .sub{display:block;font-size:32px;color:#fff4ce;margin-top:8px;text-shadow:0 0 10px #000,0 0 18px #ff8a00}
+@keyframes streakBoom{0%{opacity:0;transform:translate(-50%,-50%) scale(.35) rotate(-4deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg)}55%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-80%) scale(.82)}}
+.cardKillBadge{position:absolute;left:7px;top:7px;background:rgba(120,0,0,.72);color:#fff7c6;border:1px solid #ffd86a;border-radius:999px;padding:2px 7px;font-size:13px;font-weight:900;box-shadow:0 0 8px rgba(255,210,90,.45)}
+.battleCard .cardKillBadge{font-size:15px;padding:3px 8px}
+
+</style>
+</head>
+<body>
+<div id="game">
+  <button id="helpBtn">?</button>
+  <button id="moreBtn">☰</button>
+  <div id="moreMenu"><button class="menuItem" id="menuRestartBtn">重新開始</button><button class="menuItem" id="menuHomeBtn">返回主選單</button><button class="menuItem" id="exportAiDbBtn">匯出AI資料庫</button><button class="menuItem" id="importAiDbBtn">匯入AI資料庫</button><button class="menuItem" id="clearAiDbBtn">清空AI資料庫</button><button class="menuItem" id="idxDbHelpBtn">IndexedDB格式說明</button><input id="aiDbImportFile" type="file" accept=".json,application/json" style="display:none"></div>
+  <div id="aiPanel"><b>AI反應</b><input id="gameAiSpeedRange" type="range" min="0.3" max="2" step="0.1" value="0.7"><span id="gameAiSpeedLabel">0.7秒</span></div>
+  <div id="levelPanel"><b>AI難度</b><select id="aiLevelSel"><option value="easy">簡單</option><option value="normal" selected>中等</option><option value="hard">困難</option></select></div>
+  <button id="devLock">🔒</button>
+  <div id="devPanel"><h3>開發者模式｜AI權重（繁體中文版）</h3><div class="devSmall">密碼 6028。權重直接寫在HTML裡，可在此即時調整；面板全部使用繁體中文名稱。AI私有記憶每局重置、互不共享；共用數據庫只輸出行為傾向，不回寫AI記憶。高分資料庫最多保留800筆。</div><div id="devWeights"></div><div class="devBtns"><button class="btn" id="saveWeightsBtn">套用權重</button><button class="btn" id="resetWeightsBtn">重置權重</button><button class="btn" id="train32Btn">訓練32局</button><button class="btn" id="trainLoopBtn">無限32局訓練</button></div><div class="devStat" id="devDbStat">資料庫尚未訓練。</div></div>
+  <div id="log"><div class="logTitle">紀錄</div><div id="logBody"></div></div>
+  <div id="center"><div class="deck"><div class="deckTitle">牌堆</div><div class="deckCount" id="deckCount">34</div><div>剩餘張數</div></div><div class="turnInfo" id="turnInfo"></div><div class="modeInfo" id="modeInfo">請選擇行動</div></div>
+  <div id="seats"></div>
+  <div id="controls">
+    <button class="btn" id="attackBtn">攻打</button>
+    <button class="btn" id="siegeBtn">圍攻</button>
+    <button class="btn" id="discardBtn">棄牌</button>
+    <button class="btn" id="passBtn">PASS</button>
+    <button class="btn cancel" id="cancelBtn">取消</button>
+  </div>
+  <div id="modal"><div class="box" id="modalBox"></div></div>
+  <div id="battleOverlay"><div class="battleBox" id="battleBox"></div></div>
+  <div id="start"><div class="startBox"><h1>Who 怕 Who</h1><p>3～8人局基本AI版。<br>玩家1由你操作，其餘玩家由AI自動行動，順時針進行。</p>
+    <div class="setupRow"><label for="playerCountSel">遊戲人數</label><select id="playerCountSel"><option value="3">3人</option><option value="4">4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option><option value="8" selected>8人</option></select></div>
+    <div class="setupRow"><label for="aiSpeedRange">AI反應</label><input id="aiSpeedRange" type="range" min="0.3" max="2" step="0.1" value="0.7" oninput="aiSpeedLabel.textContent=this.value+'秒'"><span id="aiSpeedLabel">0.7秒</span></div>
+    <div class="setupRow"><label for="startAiLevelSel">AI難度</label><select id="startAiLevelSel"><option value="easy">簡單</option><option value="normal" selected>中等</option><option value="hard">困難</option></select></div>
+    <div class="setupHint"></div>
+    <button class="btn" onclick="newGame()">開始遊戲</button></div></div>
+</div>
+<script>
+const cardDefs={1:['兔','🐰'],2:['蛇','🐍'],3:['狐','🦊'],4:['狼','🐺'],5:['豹','🐆'],6:['獅','🦁'],7:['熊','🐻'],8:['虎','🐯'],hunter:['獵人','🏹'],germ:['細菌','🦠']};
+let deck=[],players=[],current=0,mode='idle',siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]},gameOver=false,busy=false,aiTimer=null,cardUidCounter=1,allCards=[];
+let playerCount=8,aiDelayMs=700,positions=[],aiMemory=[],aiScratchSpaces=[],publicHints=[];
+let aiLevel='normal',devUnlocked=false,training=false,infiniteTraining=false;
+// 共用數據庫：只輸出AI行為傾向，不接收任何AI私有記憶回寫。
+const MAX_HIGH_SCORE_RECORDS=800;
+const AI_MEMORY_SIZE=50;
+const BUILTIN_AI_ESSENCE=[{"score":40,"action":"attack","my":1,"target":1,"known":true,"result":"seed"},{"score":40,"action":"pass","my":1,"target":2,"known":true,"result":"seed"},{"score":59,"action":"attack","my":1,"target":3,"known":true,"result":"seed"},{"score":61,"action":"attack","my":1,"target":4,"known":true,"result":"seed"},{"score":63,"action":"attack","my":1,"target":5,"known":true,"result":"seed"},{"score":142,"action":"siege","my":1,"target":6,"known":true,"result":"seed"},{"score":193,"action":"siege","my":1,"target":7,"known":true,"result":"seed"},{"score":208,"action":"siege","my":1,"target":8,"known":true,"result":"seed"},{"score":48,"action":"attack","my":2,"target":1,"known":true,"result":"seed"},{"score":40,"action":"attack","my":2,"target":2,"known":true,"result":"seed"},{"score":57,"action":"attack","my":2,"target":3,"known":true,"result":"seed"},{"score":59,"action":"attack","my":2,"target":4,"known":true,"result":"seed"},{"score":61,"action":"attack","my":2,"target":5,"known":true,"result":"seed"},{"score":132,"action":"siege","my":2,"target":6,"known":true,"result":"seed"},{"score":181,"action":"siege","my":2,"target":7,"known":true,"result":"seed"},{"score":196,"action":"siege","my":2,"target":8,"known":true,"result":"seed"},{"score":56,"action":"attack","my":3,"target":1,"known":true,"result":"seed"},{"score":48,"action":"attack","my":3,"target":2,"known":true,"result":"seed"},{"score":70,"action":"attack","my":3,"target":3,"known":true,"result":"seed"},{"score":57,"action":"attack","my":3,"target":4,"known":true,"result":"seed"},{"score":59,"action":"attack","my":3,"target":5,"known":true,"result":"seed"},{"score":122,"action":"siege","my":3,"target":6,"known":true,"result":"seed"},{"score":169,"action":"siege","my":3,"target":7,"known":true,"result":"seed"},{"score":184,"action":"siege","my":3,"target":8,"known":true,"result":"seed"},{"score":64,"action":"attack","my":4,"target":1,"known":true,"result":"seed"},{"score":56,"action":"attack","my":4,"target":2,"known":true,"result":"seed"},{"score":76,"action":"attack","my":4,"target":3,"known":true,"result":"seed"},{"score":70,"action":"attack","my":4,"target":4,"known":true,"result":"seed"},{"score":57,"action":"attack","my":4,"target":5,"known":true,"result":"seed"},{"score":112,"action":"siege","my":4,"target":6,"known":true,"result":"seed"},{"score":157,"action":"siege","my":4,"target":7,"known":true,"result":"seed"},{"score":172,"action":"siege","my":4,"target":8,"known":true,"result":"seed"},{"score":72,"action":"attack","my":5,"target":1,"known":true,"result":"seed"},{"score":64,"action":"attack","my":5,"target":2,"known":true,"result":"seed"},{"score":82,"action":"attack","my":5,"target":3,"known":true,"result":"seed"},{"score":76,"action":"attack","my":5,"target":4,"known":true,"result":"seed"},{"score":70,"action":"attack","my":5,"target":5,"known":true,"result":"seed"},{"score":102,"action":"siege","my":5,"target":6,"known":true,"result":"seed"},{"score":145,"action":"siege","my":5,"target":7,"known":true,"result":"seed"},{"score":160,"action":"siege","my":5,"target":8,"known":true,"result":"seed"},{"score":80,"action":"attack","my":6,"target":1,"known":true,"result":"seed"},{"score":72,"action":"attack","my":6,"target":2,"known":true,"result":"seed"},{"score":88,"action":"attack","my":6,"target":3,"known":true,"result":"seed"},{"score":82,"action":"attack","my":6,"target":4,"known":true,"result":"seed"},{"score":76,"action":"attack","my":6,"target":5,"known":true,"result":"seed"},{"score":70,"action":"attack","my":6,"target":6,"known":true,"result":"seed"},{"score":104,"action":"siege","my":6,"target":7,"known":true,"result":"seed"},{"score":148,"action":"siege","my":6,"target":8,"known":true,"result":"seed"},{"score":88,"action":"attack","my":7,"target":1,"known":true,"result":"seed"},{"score":80,"action":"attack","my":7,"target":2,"known":true,"result":"seed"},{"score":94,"action":"attack","my":7,"target":3,"known":true,"result":"seed"},{"score":88,"action":"attack","my":7,"target":4,"known":true,"result":"seed"},{"score":82,"action":"attack","my":7,"target":5,"known":true,"result":"seed"},{"score":76,"action":"attack","my":7,"target":6,"known":true,"result":"seed"},{"score":70,"action":"attack","my":7,"target":7,"known":true,"result":"seed"},{"score":106,"action":"siege","my":7,"target":8,"known":true,"result":"seed"},{"score":96,"action":"attack","my":8,"target":1,"known":true,"result":"seed"},{"score":88,"action":"attack","my":8,"target":2,"known":true,"result":"seed"},{"score":100,"action":"attack","my":8,"target":3,"known":true,"result":"seed"},{"score":94,"action":"attack","my":8,"target":4,"known":true,"result":"seed"},{"score":88,"action":"attack","my":8,"target":5,"known":true,"result":"seed"},{"score":82,"action":"attack","my":8,"target":6,"known":true,"result":"seed"},{"score":76,"action":"attack","my":8,"target":7,"known":true,"result":"seed"},{"score":70,"action":"attack","my":8,"target":8,"known":true,"result":"seed"},{"score":126,"action":"siege","my":3,"target":"hunter","known":true,"result":"hero_challenge"},{"score":128,"action":"siege","my":4,"target":"hunter","known":true,"result":"hero_challenge"},{"score":130,"action":"siege","my":5,"target":"hunter","known":true,"result":"hero_challenge"},{"score":132,"action":"siege","my":6,"target":"hunter","known":true,"result":"hero_challenge"},{"score":134,"action":"siege","my":7,"target":"hunter","known":true,"result":"hero_challenge"},{"score":136,"action":"siege","my":8,"target":"hunter","known":true,"result":"hero_challenge"},{"score":90,"action":"avoid_siege","my":1,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":2,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":3,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":4,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":5,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":6,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":7,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":90,"action":"avoid_siege","my":8,"target":"germ","known":true,"result":"avoid_known_germ"},{"score":58,"action":"attack","my":3,"target":"unknown","known":false,"result":"unknown_attack_first"},{"score":59,"action":"attack","my":4,"target":"unknown","known":false,"result":"unknown_attack_first"},{"score":60,"action":"attack","my":5,"target":"unknown","known":false,"result":"unknown_attack_first"},{"score":61,"action":"attack","my":6,"target":"unknown","known":false,"result":"unknown_attack_first"},{"score":62,"action":"attack","my":7,"target":"unknown","known":false,"result":"unknown_attack_first"}];
+const AI_DB_STORE_NAME='whoPaWhoAiDbV1';
+const AI_DB_KEY='highEndRecords';
+
+const aiDatabase={games:0,wins:{easy:0,normal:0,hard:0},actionBias:{attack:1,siege:1,discard:1,pass:1},highScores:[],builtinEssence:BUILTIN_AI_ESSENCE,lastTraining:'HTML內建精華庫已載入：'+BUILTIN_AI_ESSENCE.length+'筆摘要。',recentBatchAvg:0,dbQuality:1};
+// 可調整AI權重：會直接存在HTML內，開發者面板可即時改。
+const AI_WEIGHT_DEFAULTS={
+  easy:{attackBase:65,siegeBase:8,discardSmall:80,foxDiscard:70,germPass:70,germLateDiscard:60,knownWinBonus:20,knownLosePenalty:12,scoreTargetBias:8,repeatTargetPenalty:16,randomness:65,passPenalty:8,threatSiegeThreshold:7,threatSiegeBonus:25,scoreSystemWeight:35},
+  normal:{attackBase:78,siegeBase:8,discardSmall:72,foxDiscard:82,germPass:62,germLateDiscard:75,knownWinBonus:55,knownLosePenalty:35,scoreTargetBias:18,repeatTargetPenalty:18,randomness:38,passPenalty:14,threatSiegeThreshold:7,threatSiegeBonus:55,scoreSystemWeight:65},
+  hard:{attackBase:84,siegeBase:14,discardSmall:64,foxDiscard:90,germPass:52,germLateDiscard:86,knownWinBonus:78,knownLosePenalty:48,scoreTargetBias:28,repeatTargetPenalty:22,randomness:18,passPenalty:22,threatSiegeThreshold:7,threatSiegeBonus:82,scoreSystemWeight:92}
+};
+let AI_WEIGHTS=JSON.parse(JSON.stringify(AI_WEIGHT_DEFAULTS));
+function levelName(l){return l==='easy'?'簡單':l==='hard'?'困難':'中等'}
+function W(k){return AI_WEIGHTS[aiLevel]?.[k] ?? AI_WEIGHTS.normal[k]}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function calcPositions(n){
+  // 8人局使用手調環形座標：AI5下移，避免上方座位擠在一起。
+  if(n===8){
+    return [
+      [868,685],   // 玩家1
+      [420,590],   // AI2
+      [245,285],   // AI3
+      [500,70],    // AI4
+      [868,70],    // AI5 與AI4、AI6平行
+      [1235,70],   // AI6
+      [1490,285],  // AI7
+      [1315,590]   // AI8
+    ];
+  }
+  const cx=960,cy=455,rx=610,ry=365,arr=[];
+  for(let i=0;i<n;i++){
+    const deg=90+i*(360/n);
+    const rad=deg*Math.PI/180;
+    arr.push([Math.round(cx+rx*Math.cos(rad)-92),Math.round(cy+ry*Math.sin(rad)-135)]);
+  }
+  return arr;
+}
+
+function deckRuleText(n){
+  if(n===3)return '3人局：移除1～8動物各3張，並移除細菌卡1張。';
+  if(n===4)return '4人局：移除1～8動物各2張。';
+  if(n===5)return '5人局：移除1～8動物各1張。';
+  return n+'人局：使用完整42張牌。';
+}
+function makeCard(obj){
+  obj.uid=cardUidCounter++;
+  obj.killCount=0;
+  obj.killValueSum=0;
+  obj.mvpEvents=[];
+  allCards.push(obj);
+  return obj;
+}
+function makeDeck(count=8){
+  cardUidCounter=1;
+  allCards=[];
+  let d=[];
+  let animalCopies=5;
+  if(count===3)animalCopies=2;else if(count===4)animalCopies=3;else if(count===5)animalCopies=4;
+  for(let v=1;v<=8;v++){
+    for(let i=0;i<animalCopies;i++)d.push(makeCard({type:'animal',value:v,name:cardDefs[v][0],icon:cardDefs[v][1]}));
+  }
+  d.push(makeCard({type:'hunter',value:9,name:'獵人',icon:'🏹'}));
+  if(count!==3)d.push(makeCard({type:'germ',value:0,name:'細菌',icon:'🦠'}));
+  return shuffle(d);
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function newGame(){
+  if(aiTimer)clearTimeout(aiTimer);
+  playerCount=Math.max(3,Math.min(8,parseInt(playerCountSel?.value||'8',10)));
+  aiDelayMs=Math.round(parseFloat(aiSpeedRange?.value||gameAiSpeedRange?.value||'0.7')*1000);
+  aiLevel=startAiLevelSel?.value||aiLevelSel?.value||'normal';
+  if(aiLevelSel)aiLevelSel.value=aiLevel;if(startAiLevelSel)startAiLevelSel.value=aiLevel;
+  if(gameAiSpeedRange){gameAiSpeedRange.value=(aiDelayMs/1000).toFixed(1);gameAiSpeedLabel.textContent=(aiDelayMs/1000).toFixed(1)+'秒';}
+  positions=calcPositions(playerCount);
+  deck=makeDeck(playerCount);players=[];aiMemory=[];publicHints=[];
+  for(let i=0;i<playerCount;i++)players.push({name:i===0?'玩家1':'AI'+(i+1),isAI:i!==0,hand:deck.pop(),scoreCards:[],discardPile:[],discardCount:0,lastTargets:[],actionStats:{attack:0,siege:0,discard:0,pass:0}});
+  for(let i=0;i<playerCount;i++){aiMemory[i]=Array.from({length:playerCount},()=>({card:null,turnSeen:-1,source:''}));aiScratchSpaces[i]=Array.from({length:AI_MEMORY_SIZE},()=>({seen:[],notes:[]}));publicHints[i]={threat:0,source:''};}
+  current=0;mode='idle';gameOver=false;busy=false;siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]};
+  logBody.innerHTML='';start.style.display='none';
+  log(`遊戲開始：${playerCount}人局。玩家1由你操作，AI難度 ${levelName(aiLevel)}，AI反應 ${Math.round(aiDelayMs)/1000} 秒，牌堆剩 ${deck.length} 張。`);
+  log(deckRuleText(playerCount));
+  log('AI記憶規則：不偷看、不共享私有記憶；只使用自己看過的牌與公開分數。');
+  render()
+}
+function draw(){if(deck.length<=0){endGame();return null}let c=deck.pop(); if(deck.length===0)setTimeout(endGame,10); return c}
+function scoreCard(c){if(!c)return 0;if(c.type==='hunter')return 9;if(c.type==='germ')return 0;return c.value}
+function power(c,attackers=1,isSiegeDef=false){if(c.type==='germ')return Infinity;if(c.type==='hunter')return isSiegeDef?9+attackers:9;return c.value}
+function cardLabel(c){return `${c.icon} ${c.name}${c.type==='germ'?'∞':scoreCard(c)}`}
+function abilityMarks(c){
+  if(!c)return '';
+  if(c.type==='animal'&&c.value===3)return '<div class="foxEye" title="棄牌時查看全場">👁</div>';
+  if(c.type==='hunter')return '<div class="actionMarks"><span class="ok">V攻打</span><span class="no">X圍攻</span><span class="no">X棄牌</span><span class="ok">V PASS</span></div>';
+  if(c.type==='germ')return '<div class="actionMarks"><span class="no">X攻打</span><span class="no">X圍攻</span><span class="ok">V棄牌</span><span class="ok">V PASS</span></div>';
+  return '';
+}
+function powerText(c,attackers=1,isSiegeDef=false,showHunterAdd=true){
+  if(c.type==='germ')return '∞';
+  if(c.type==='hunter'){
+    if(isSiegeDef&&attackers>1&&showHunterAdd)return `9<span class="greenAdd">+${attackers}</span>`;
+    return '9';
+  }
+  return String(c.value);
+}
+function killBadge(c){return c&&c.killCount>0?`<div class="cardKillBadge">K${c.killCount}</div>`:''}
+function cardHTML(c,visible){if(!visible)return '<div class="card back"><div class="animal">?</div><div class="num">???</div></div>';let cls='card '+(c.type==='hunter'?'special':c.type==='germ'?'germ':'');return `<div class="${cls}">${killBadge(c)}<div class="animal">${c.icon} ${c.name}</div><div class="num">${c.type==='germ'?'∞':scoreCard(c)}</div>${abilityMarks(c)}</div>`}
+function totalScore(p){return p.scoreCards.reduce((s,c)=>s+scoreCard(c),0)-p.discardCount}
+function setPublicThreat(idx,val,source){if(!publicHints[idx])publicHints[idx]={threat:0,source:''};publicHints[idx].threat=Math.max(publicHints[idx].threat||0,val||0);publicHints[idx].source=source||publicHints[idx].source;}
+function clearPublicThreat(idx){if(publicHints[idx])publicHints[idx]={threat:0,source:''};}
+function recordPublicWinInference(winnerIndex,loserCard,reason){const v=scoreCard(loserCard);if(v>=6)setPublicThreat(winnerIndex,Math.min(9,v+1),reason||'公開戰果推測');}
+function pushHighScoreRecord(rec){aiDatabase.highScores.push(rec);aiDatabase.highScores.sort((a,b)=>b.score-a.score);if(aiDatabase.highScores.length>MAX_HIGH_SCORE_RECORDS)aiDatabase.highScores.length=MAX_HIGH_SCORE_RECORDS;}
+function aiRecordScoreSnapshot(tag='實戰'){players.forEach((p,idx)=>{if(p.isAI)pushHighScoreRecord({score:totalScore(p),level:aiLevel,player:p.name,tag,actions:p.actionStats||{},time:Date.now()});});}
+function render(){const seats=document.getElementById('seats');seats.innerHTML='';players.forEach((p,i)=>{let div=document.createElement('div');div.className='seat '+(i===current?'current ':'')+((mode==='selectAttack'||mode==='selectSiegeTarget')&&i!==current?'targetable ':'')+(siege.target===i?'defender ':'')+(siege.joiners.includes(i)||(mode.startsWith('siege')&&i===current)?'attacker ':'');div.style.left=positions[i][0]+'px';div.style.top=positions[i][1]+'px';div.onclick=()=>seatClick(i);div.id='seat-'+i;div.innerHTML=`<div class="name">${p.name}</div>${cardHTML(p.hand,i===0||gameOver)}<div class="stats">分數：${totalScore(p)}</div><div class="zones"><div class="zone scoreZone" id="scoreZone-${i}">得分區<br>${p.scoreCards.length}</div><div class="zone discardZone" id="discardZone-${i}">棄牌區<br>${p.discardCount}</div></div>`;seats.appendChild(div)});deckCount.textContent=deck.length;turnInfo.textContent=gameOver?'遊戲結束':`${players[current]?.name||''} 的回合`;modeInfo.textContent=modeText();updateButtons();maybeScheduleAI()}
+function modeText(){if(mode==='selectAttack')return '選擇攻打目標，可按取消';if(mode==='selectSiegeTarget')return '選擇圍攻目標，可按取消';if(mode==='siegeAsk')return '依序詢問是否參與圍攻';if(mode==='siegePick')return '發起者挑選1～2名圍攻者';return '請選擇行動'}
+function updateButtons(){let p=players[current],c=p?.hand,isAI=p?.isAI;attackBtn.disabled=busy||gameOver||isAI||!c||c.type==='germ'||mode!=='idle';siegeBtn.disabled=busy||gameOver||isAI||!c||c.type==='germ'||c.type==='hunter'||mode!=='idle';discardBtn.disabled=busy||gameOver||isAI||!c||c.type==='hunter'||mode!=='idle';passBtn.disabled=busy||gameOver||isAI||mode!=='idle';cancelBtn.style.display=(mode!=='idle'&&!busy&&!gameOver&&!isAI)?'inline-block':'none'}
+function seatClick(i){if(busy||gameOver||players[current]?.isAI||i===current)return;if(mode==='selectAttack')doAttack(current,i);else if(mode==='selectSiegeTarget'){siege={target:i,volunteers:[],joiners:[],askIndex:0,candidates:[]};mode='siegeAsk';startSiegeAsk()}}
+attackBtn.onclick=()=>{if(busy)return;mode='selectAttack';render()};siegeBtn.onclick=()=>{if(busy)return;mode='selectSiegeTarget';render()};passBtn.onclick=()=>{if(busy)return;players[current].actionStats.pass++;log(players[current].name+' PASS。');nextTurn()};cancelBtn.onclick=()=>cancelAction();
+function cancelAction(){modal.style.display='none';mode='idle';siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]};log('取消目前行動。');render()}
+discardBtn.onclick=()=>{if(busy)return;let p=players[current],old=p.hand;if(old.type==='hunter')return;if(old.value===3&&old.type==='animal')showFox(()=>doDiscard());else doDiscard()};
+
+function killStreakName(k){
+  if(k>=6)return ['UNBELIEVABLE','難以置信！'];
+  if(k===5)return ['PENTA KILL','五殺！'];
+  if(k===4)return ['QUADRA KILL','四殺！'];
+  if(k===3)return ['TRIPLE KILL','三殺！'];
+  if(k===2)return ['DOUBLE KILL','雙殺！'];
+  return null;
+}
+function killMultiplier(k){
+  if(k>=6)return 1.6;
+  if(k===5)return 1.5;
+  if(k===4)return 1.4;
+  if(k===3)return 1.3;
+  if(k===2)return 1.2;
+  return 1.0;
+}
+function baseMvpValue(c){
+  if(!c)return 0;
+  if(c.type==='germ')return 100;
+  if(c.type==='hunter')return 90;
+  return scoreCard(c)*10;
+}
+function showKillStreak(card,ownerIndex){
+  const data=killStreakName(card.killCount||0);
+  if(!data)return;
+  if(ownerIndex!==0){
+    log(`${players[ownerIndex]?.name||'AI'} 的 ${card.icon}${card.name} 達成 ${data[0]}。`);
+    return;
+  }
+  const el=document.createElement('div');
+  el.className='killStreakText';
+  el.innerHTML=`${data[0]}<span class="sub">你的 ${card.icon}${card.name}｜${data[1]}</span>`;
+  game.appendChild(el);
+  setTimeout(()=>el.remove(),1700);
+}
+function addKillsToCard(card,killedCards,ownerIndex,reason){
+  if(!card)return;
+  if(!Array.isArray(killedCards))killedCards=[killedCards];
+  killedCards.filter(Boolean).forEach(killed=>{
+    const value=baseMvpValue(killed);
+    card.killCount=(card.killCount||0)+1;
+    card.killValueSum=(card.killValueSum||0)+value;
+    card.mvpEvents=card.mvpEvents||[];
+    card.mvpEvents.push({type:'kill',reason:reason||'擊殺',value:value,time:Date.now(),target:killed.name});
+    showKillStreak(card,ownerIndex);
+  });
+}
+function cardMvpScore(c,ownerRankBonus=0){
+  return Math.round((c?.killValueSum||0)*killMultiplier(c?.killCount||0)+ownerRankBonus);
+}
+function findCardOwner(c){
+  if(!c)return -1;
+  for(let i=0;i<players.length;i++){
+    const p=players[i];
+    if(p.hand===c)return i;
+    if((p.scoreCards||[]).includes(c))return i;
+    if((p.discardPile||[]).includes(c))return i;
+  }
+  return -1;
+}
+function bestMvpCard(ranking){
+  const rankBonus=new Map();
+  ranking.forEach((p,idx)=>rankBonus.set(p,idx===0?50:idx===1?20:idx===2?5:0));
+  let best=null;
+  for(const c of allCards){
+    const ownerIdx=findCardOwner(c);
+    const owner=ownerIdx>=0?players[ownerIdx]:null;
+    const bonus=owner?(rankBonus.get(owner)||0):0;
+    const score=cardMvpScore(c,bonus);
+    if(!best||score>best.score)best={card:c,score,owner,ownerIdx,rankBonus:bonus};
+  }
+  return best;
+}
+
+function flyingClass(c){return c.type==='hunter'?' special':c.type==='germ'?' germ':''}function miniCardText(c){return `<div class="animal">${c.icon} ${c.name}</div><div class="num">${c.type==='germ'?'∞':scoreCard(c)}</div>`}function zonePoint(i,zone){let[x,y]=positions[i];return zone==='discard'?[x+128,y+235]:[x+50,y+235]}function handPoint(i){let[x,y]=positions[i];return[x+92,y+96]}function flashSeat(i,cls){let el=document.getElementById('seat-'+i);if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),800)}function popKillText(text,i){let[x,y]=handPoint(i);let el=document.createElement('div');el.className='killText';el.style.left=x+'px';el.style.top=y+'px';el.textContent=text;game.appendChild(el);setTimeout(()=>el.remove(),1100)}function flyCard(c,from,to,zone='score',text=''){let[sx,sy]=handPoint(from),[tx,ty]=zonePoint(to,zone);let el=document.createElement('div');el.className='flyingCard'+flyingClass(c);el.style.left=(sx-39)+'px';el.style.top=(sy-50)+'px';el.innerHTML=miniCardText(c);game.appendChild(el);requestAnimationFrame(()=>{el.style.transform=`translate(${tx-sx}px,${ty-sy}px) scale(.72)`;el.style.opacity='.15'});setTimeout(()=>el.remove(),820);if(text)popKillText(text,from);flashSeat(to,'flashWin');flashSeat(from,'flashLose')}
+function doDiscard(){let p=players[current],old=p.hand;flyCard(old,current,current,'discard','棄牌');p.discardCount++;p.discardPile.push(old);p.actionStats.discard++;log(`${p.name} 棄牌（內容保密），棄牌數 +1。`);p.hand=draw();forgetKnownCard(current);clearPublicThreat(current);if(!gameOver){log(`${p.name} 重新抽牌。`);nextTurn()}}
+function showFox(cb){let html='<h2>狐狸能力：查看全場手牌</h2><p>此情報只有使用狐狸者看得到。</p><div class="revealGrid">';players.forEach((p,i)=>{html+=`<div class="miniLine">${p.name}：${cardLabel(p.hand)}</div>`});html+='</div><br><button class="btn" id="okFox">確認並棄牌</button>';modalBox.innerHTML=html;modal.style.display='flex';okFox.onclick=()=>{modal.style.display='none';cb()}}
+function battleCardHTML(c,attackers=1,isSiegeDef=false,showHunterAdd=true){let cls='battleCard '+(c.type==='hunter'?'special':c.type==='germ'?'germ':'');return `<div class="${cls}">${killBadge(c)}<div class="animal">${c.icon} ${c.name}</div><div class="num">${powerText(c,attackers,isSiegeDef,showHunterAdd)}</div>${abilityMarks(c)}</div>`}
+function battleUnknownHTML(){return `<div class="battleCard unknown"><div class="animal">?</div><div class="num">???</div></div>`}
+function humanInvolved(list){return list.includes(0)}
+function publicBattleCardFor(i,loserIndex){return i===loserIndex?battleCardHTML(players[i].hand):battleUnknownHTML()}
+function showAttackBattle(a,d,winnerIndex,loserIndex,done){busy=true;updateButtons();const A=players[a],D=players[d];const privateVisible=humanInvolved([a,d]);let title=privateVisible?'私下確認手牌':'幕後攻打';let sub=privateVisible?`只有 ${A.name} 與 ${D.name} 看得到這段動畫`:'你未參與本次攻打，只會看到敗方牌；贏家手牌以黑色「？」表示。';let atkCard=privateVisible?battleCardHTML(A.hand):publicBattleCardFor(a,loserIndex);let defCard=privateVisible?battleCardHTML(D.hand):publicBattleCardFor(d,loserIndex);battleBox.innerHTML=`<div class="battleTitle">${title}</div><div class="battleSub">${sub}</div><div class="battleArena"><div class="battleSide" id="atkSide"><div class="battleName">${A.name}</div>${atkCard}</div><div class="vsText">VS</div><div class="battleSide" id="defSide"><div class="battleName">${D.name}</div>${defCard}</div></div><div class="battleResult" id="battleResult">${players[loserIndex].hand.name} 被擊殺！${players[winnerIndex].name} 勝利</div>`;battleOverlay.style.display='flex';setTimeout(()=>atkSide.classList.add('in'),100);setTimeout(()=>defSide.classList.add('in'),350);setTimeout(()=>battleBox.querySelectorAll('.battleSide')[loserIndex===a?0:1].querySelector('.battleCard').classList.add('killed'),1050);setTimeout(()=>battleResult.classList.add('show'),1400);setTimeout(()=>{battleOverlay.style.display='none';busy=false;done()},2000)}
+function doAttack(a,d){players[a].actionStats.attack++;mode='idle';render();let A=players[a],D=players[d];let ap=power(A.hand,1,false),dp=power(D.hand,1,false);let win=ap>=dp;let winnerIndex=win?a:d,loserIndex=win?d:a;
+  // 攻打雙方私下看牌：只有參與者的AI會更新自己的私有記憶。
+  rememberCard(a,d,D.hand,'攻打');rememberCard(d,a,A.hand,'攻打');
+  showAttackBattle(a,d,winnerIndex,loserIndex,()=>{let winner=players[winnerIndex],loser=players[loserIndex],trophy=loser.hand,winningCard=winner.hand;addKillsToCard(winningCard,trophy,winnerIndex,'攻打擊殺');flyCard(trophy,loserIndex,winnerIndex,'score',`${trophy.name}被擊殺！`);winner.scoreCards.push(trophy);recordPublicWinInference(winnerIndex,trophy,'攻打擊敗 '+trophy.name);if(humanInvolved([a,d]))log(`${A.name} 攻打 ${D.name}：${cardLabel(A.hand)} vs ${cardLabel(D.hand)}，${winner.name}勝，${winner.name} 得分區加入 ${cardLabel(trophy)}。`);else log(`${A.name} 攻打 ${D.name}：${loser.name} 的 ${cardLabel(trophy)} 被擊殺；${winner.name} 的手牌保密。`);loser.hand=draw();forgetKnownCard(loserIndex);clearPublicThreat(loserIndex);if(!gameOver)nextTurn()})}
+function startSiegeAsk(){const candidates=[];players.forEach((p,i)=>{if(i!==current&&i!==siege.target&&p.hand&&p.hand.type!=='germ'&&p.hand.type!=='hunter')candidates.push(i)});siege.candidates=candidates;siege.askIndex=0;siege.volunteers=[];render();askNextSiegeVolunteer()}
+function askNextSiegeVolunteer(){
+  if(siege.askIndex>=siege.candidates.length){modal.style.display='none';openSiegePickModal();return}
+  const i=siege.candidates[siege.askIndex],p=players[i];
+  if(p.isAI){
+    let join=aiDecideJoinSiege(i,siege.target,current);
+    log(`${p.name} ${join?'願意參與圍攻':'不參與圍攻'}。`);
+    if(join)siege.volunteers.push(i);
+    siege.askIndex++;
+    setTimeout(askNextSiegeVolunteer,360);
+    return;
+  }
+  modalBox.innerHTML=`<h2>${p.name} 是否參與圍攻？</h2><p>發起者：${players[current].name}<br>目標：${players[siege.target].name}</p><button class="btn" id="joinYes">參與！</button><button class="btn cancel" id="joinNo">不參與！</button>`;
+  modal.style.display='flex';
+  joinYes.onclick=()=>{modal.style.display='none';siege.volunteers.push(i);log(`${p.name} 願意參與圍攻。`);siege.askIndex++;setTimeout(askNextSiegeVolunteer,80)};
+  joinNo.onclick=()=>{modal.style.display='none';log(`${p.name} 不參與圍攻。`);siege.askIndex++;setTimeout(askNextSiegeVolunteer,80)};
+}
+function openSiegePickModal(){modal.style.display='none';mode='siegePick';render();if(siege.volunteers.length===0){doAttack(current,siege.target);siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]};return}if(players[current].isAI){siege.joiners=aiPickSiegeJoiners(current,siege.target,siege.volunteers);log(`${players[current].name} 挑選 ${siege.joiners.map(i=>players[i].name).join('、')} 參與圍攻。`);setTimeout(resolveSiege,600);return}let html=`<h2>發起者挑選圍攻者</h2><p>願意參與者如下。${players[current].name} 可選擇 1 位或 2 位一起圍攻。</p><p>目標：${players[siege.target].name}</p>`;siege.volunteers.forEach(i=>{html+=`<div class="choice" data-i="${i}">${players[i].name}</div>`});html+='<br><br><button class="btn" id="confirmSiege">確認圍攻</button><button class="btn cancel" id="cancelSiege">取消圍攻</button>';modalBox.innerHTML=html;modal.style.display='flex';document.querySelectorAll('.choice').forEach(el=>el.onclick=()=>{let i=+el.dataset.i;if(siege.joiners.includes(i)){siege.joiners=siege.joiners.filter(x=>x!==i);el.classList.remove('on')}else if(siege.joiners.length<2){siege.joiners.push(i);el.classList.add('on')}render()});confirmSiege.onclick=()=>{if(siege.joiners.length<1){alert('至少要選1名參與者。');return}resolveSiege()};cancelSiege.onclick=()=>cancelAction()}
+function resolveSiege(){players[current].actionStats.siege++;modal.style.display='none';let attackers=[current,...siege.joiners],target=siege.target;rememberMany([...attackers,target],[...attackers,target],'圍攻');let sum=attackers.reduce((s,i)=>s+power(players[i].hand),0);let def=power(players[target].hand,attackers.length,true);let success=sum>=def;if(success){let minVal=Math.min(...attackers.map(i=>scoreCard(players[i].hand)));let mins=attackers.filter(i=>scoreCard(players[i].hand)===minVal);if(mins.length>1)chooseTrophyReceiver(mins,target,attackers,sum,def);else showSiegeBattle(attackers,target,true,mins[0],sum,def,()=>finishSiegeSuccess(mins[0],target,attackers,sum,def))}else showSiegeBattle(attackers,target,false,target,sum,def,()=>finishSiegeFail(target,attackers,sum,def))}
+function aiChooseTrophyReceiver(starter,mins,target){
+  // 圍攻發起者是AI時，由AI自行決定戰利品分配。
+  // 原則：優先自己拿；否則給目前分數較低的參與者，避免把同盟養太肥。
+  if(mins.includes(starter))return starter;
+  return [...mins].sort((a,b)=>{
+    const scoreA=totalScore(players[a]);
+    const scoreB=totalScore(players[b]);
+    if(scoreA!==scoreB)return scoreA-scoreB;
+    return a-b;
+  })[0];
+}
+function chooseTrophyReceiver(mins,target,attackers,sum,def){
+  const starter=attackers[0];
+  if(players[starter]?.isAI){
+    const r=aiChooseTrophyReceiver(starter,mins,target);
+    log(`${players[starter].name} 自行決定戰利品分配：得分交給 ${players[r].name}。`);
+    showSiegeBattle(attackers,target,true,r,sum,def,()=>finishSiegeSuccess(r,target,attackers,sum,def));
+    return;
+  }
+  let html='<h2>最小值平手</h2><p>由圍攻發起者選擇得分交給誰。</p>';
+  mins.forEach(i=>html+=`<div class="choice" data-i="${i}">${players[i].name}（${cardLabel(players[i].hand)}）</div>`);
+  modalBox.innerHTML=html;
+  modal.style.display='flex';
+  document.querySelectorAll('.choice').forEach(el=>el.onclick=()=>{
+    modal.style.display='none';
+    let r=+el.dataset.i;
+    showSiegeBattle(attackers,target,true,r,sum,def,()=>finishSiegeSuccess(r,target,attackers,sum,def));
+  });
+}
+function showSiegeBattle(attackers,target,success,receiver,sum,def,done){busy=true;updateButtons();let privateVisible=humanInvolved([...attackers,target]);let visibleNames=attackers.map(i=>players[i].name).concat(players[target].name).join('、');let attackHtml=attackers.map((i,idx)=>{let html=privateVisible?battleCardHTML(players[i].hand):(success?battleUnknownHTML():battleCardHTML(players[i].hand,1,false,false));return `<div class="battleSide siegeAtk" id="siegeAtk${idx}"><div class="battleName">${players[i].name}</div>${html}</div>`}).join('');let defHtml=privateVisible?battleCardHTML(players[target].hand,attackers.length,true,true):(success?battleCardHTML(players[target].hand,1,false,false):battleUnknownHTML());let title=privateVisible?'圍攻私下動畫':'幕後圍攻';let sub=privateVisible?`只有圍攻方與被圍攻者可看：${visibleNames}`:'你未參與本次圍攻，只會看到敗方牌；勝方手牌以黑色「？」表示。';battleBox.innerHTML=`<div class="battleTitle">${title}</div><div class="battleSub">${sub}</div><div class="sumBox" id="sumBox">${privateVisible?'攻方總戰力：?':'幕後結算中'}</div><div class="battleArena">${attackHtml}<div class="vsText">VS</div><div class="battleSide" id="siegeDef"><div class="battleName">${players[target].name}</div>${defHtml}</div></div><div class="battleResult" id="siegeResult"></div>`;battleOverlay.style.display='flex';attackers.forEach((_,idx)=>setTimeout(()=>document.getElementById('siegeAtk'+idx).classList.add('in'),350+idx*450));setTimeout(()=>{if(privateVisible)sumBox.textContent='攻方總戰力：'+(sum===Infinity?'∞':sum)},350+attackers.length*450);setTimeout(()=>document.getElementById('siegeDef').classList.add('in'),2100);setTimeout(()=>{sumBox.innerHTML=privateVisible?`攻方 ${sum===Infinity?'∞':sum} vs 防守 ${players[target].hand.type==='hunter'?powerText(players[target].hand,attackers.length,true,true)+' = '+(def===Infinity?'∞':def):(def===Infinity?'∞':def)}`:'勝方手牌保密'},2600);setTimeout(()=>{if(success){document.querySelector('#siegeDef .battleCard').classList.add('killed');siegeResult.textContent=`${players[target].hand.name} 被圍殺！得分給 ${players[receiver].name}`;}else{document.querySelectorAll('.siegeAtk .battleCard').forEach(c=>c.classList.add('killed'));siegeResult.textContent=`圍攻失敗！${players[target].name} 反殺所有攻方`; }siegeResult.classList.add('show')},3300);setTimeout(()=>{battleOverlay.style.display='none';busy=false;done()},4500)}
+function finishSiegeSuccess(receiver,target,attackers,sum,def){let trophy=players[target].hand;attackers.forEach(ai=>addKillsToCard(players[ai].hand,trophy,ai,'共同圍攻擊殺'));flyCard(trophy,target,receiver,'score',`${trophy.name}被圍殺！`);players[receiver].scoreCards.push(trophy);recordPublicWinInference(receiver,trophy,'圍攻擊敗 '+trophy.name);if(humanInvolved([...attackers,target]))log(`圍攻成功：攻方 ${sum===Infinity?'∞':sum} vs ${players[target].name} ${cardLabel(trophy)}。得分給 ${players[receiver].name}。`);else log(`圍攻成功：${players[target].name} 的 ${cardLabel(trophy)} 被圍殺；攻方手牌保密，得分給 ${players[receiver].name}。`);players[target].hand=draw();forgetKnownCard(target);clearPublicThreat(target);siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]};if(!gameOver)nextTurn()}
+function finishSiegeFail(target,attackers,sum,def){let defP=players[target],names=[],deadLabels=[];addKillsToCard(defP.hand,attackers.map(i=>players[i].hand),target,'圍攻反殺');attackers.forEach((i,idx)=>{let dead=players[i].hand;setTimeout(()=>flyCard(dead,i,target,'score',`${dead.name}反殺！`),idx*120);defP.scoreCards.push(dead);recordPublicWinInference(target,dead,'圍攻反殺 '+dead.name);names.push(players[i].name);deadLabels.push(`${players[i].name}:${cardLabel(dead)}`);players[i].hand=draw();forgetKnownCard(i);clearPublicThreat(i)});if(humanInvolved([...attackers,target]))log(`圍攻失敗：攻方 ${sum===Infinity?'∞':sum}，防守方 ${defP.name} 戰力 ${def===Infinity?'∞':def}。${defP.name}獲得 ${deadLabels.join('、')}。`);else log(`圍攻失敗：${defP.name} 反殺攻方，獲得 ${deadLabels.join('、')}；防守方手牌保密。`);siege={target:null,volunteers:[],joiners:[],askIndex:0,candidates:[]};if(!gameOver)nextTurn()}
+
+function cloneKnownCard(c){return c?{type:c.type,value:c.value,name:c.name,icon:c.icon}:null}
+function rememberCard(observer,target,card,source){
+  if(!players[observer]?.isAI||observer===target||!aiMemory[observer])return;
+  aiMemory[observer][target]={card:cloneKnownCard(card),turnSeen:current,source};
+}
+function forgetKnownCard(target){
+  aiMemory.forEach(mem=>{if(mem&&mem[target])mem[target]={card:null,turnSeen:-1,source:''}});
+}
+function rememberMany(viewers,targets,source){
+  viewers.forEach(v=>targets.forEach(t=>rememberCard(v,t,players[t].hand,source)));
+}
+function knownCard(observer,target){return aiMemory[observer]?.[target]?.card||null}
+function canBeat(myCard,targetCard,attackers=1,isSiege=false){return power(myCard,attackers,false)>=power(targetCard,attackers,isSiege)}
+
+function maybeScheduleAI(){
+  if(gameOver||busy||mode!=='idle'||!players[current]?.isAI)return;
+  if(aiTimer)clearTimeout(aiTimer);
+  aiTimer=setTimeout(aiTurn,aiDelayMs);
+}
+function aliveTargetsFor(i){return players.map((p,idx)=>idx).filter(idx=>idx!==i&&players[idx].hand)}
+function randomPick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function aiTurn(){
+  if(gameOver||busy||mode!=='idle'||!players[current]?.isAI)return;
+  const me=players[current], c=me.hand;
+  if(!c){nextTurn();return}
+  const action=aiChooseAction(current);
+  if(action.type==='discard'){log(`${me.name}（${levelName(aiLevel)}AI）選擇棄牌。`);doDiscard();return}
+  if(action.type==='pass'){log(`${me.name}（${levelName(aiLevel)}AI）PASS。`);nextTurn();return}
+  if(action.type==='siege'){
+    log(`${me.name}（${levelName(aiLevel)}AI）發起圍攻 ${players[action.target].name}。`);
+    siege={target:action.target,volunteers:[],joiners:[],askIndex:0,candidates:[]};mode='siegeAsk';startSiegeAsk();return;
+  }
+  log(`${me.name}（${levelName(aiLevel)}AI）攻打 ${players[action.target].name}。`);doAttack(current,action.target);
+}
+
+function rawCardPowerForSiegeEval(c){
+  if(!c)return 0;
+  if(c.type==='germ')return 99;
+  if(c.type==='hunter')return 9;
+  return scoreCard(c);
+}
+function siegeKnownValueModifier(card){
+  if(!card)return 0;
+  if(card.type==='germ')return -999; // 已知細菌還發起圍攻才重扣；未知踩到細菌不扣這項。
+  if(card.type==='hunter')return 100; // 獵人是英雄挑戰，哪怕失敗也不視為壞決策。
+  const table={1:-100,2:-90,3:-60,4:-30,5:-10,6:10,7:50,8:80};
+  return table[card.value]??0;
+}
+function siegeGapModifier(myPower,targetPower){
+  const gap=targetPower-myPower;
+  if(gap>=4)return 80;
+  if(gap===3)return 60;
+  if(gap===2)return 40;
+  if(gap===1)return 20;
+  if(gap===0)return 0;
+  if(gap===-1)return -20;
+  if(gap===-2)return -50;
+  if(gap===-3)return -80;
+  return -100;
+}
+function siegeThreatModifier(threat){
+  if(threat>=9)return 80;
+  if(threat>=7)return 40;
+  if(threat>=4)return 20;
+  return 0;
+}
+function aiSiegeEval(i,target){
+  const my=players[i].hand;
+  const known=knownCard(i,target);
+  const knownBonus=known?5:-10; // 未知亂圍攻-10；已知目標+5
+  let targetPower=known?rawCardPowerForSiegeEval(known):(publicHints[target]?.threat||0);
+  if(!targetPower)targetPower=5; // 完全未知時以中間值估計，不偷看實際手牌。
+  const myPower=rawCardPowerForSiegeEval(my);
+  let score=0;
+  score+=knownBonus;
+  score+=siegeGapModifier(myPower,targetPower);
+  score+=siegeThreatModifier(publicHints[target]?.threat||0);
+  score+=Math.min(30,Math.max(0,totalScore(players[target]))*2);
+  if(known)score+=siegeKnownValueModifier(known);
+  else score-=10;
+  score+=builtinEssenceBias('siege',my?.value||0,known?(known.type==='hunter'?'hunter':known.type==='germ'?'germ':known.value):'unknown',!!known)*dbQualityMultiplier();
+  // 自己單挑已經穩贏時，降低圍攻意義。
+  if(known && known.type!=='germ' && canBeat(my,known,1,false))score-=40;
+  return {score,known,targetPower,myPower,knownBonus};
+}
+function aiShouldSiege(i,target){
+  const ev=aiSiegeEval(i,target);
+  if(ev.known?.type==='germ')return false;
+  return ev.score>=50;
+}
+
+function aiChooseAction(i){
+  const me=players[i], c=me.hand;
+  if(c.type==='germ'){
+    const late=deck.length<=8;
+    const discardChance=late?W('germLateDiscard'):(100-W('germPass'));
+    return Math.random()*100<discardChance?{type:'discard'}:{type:'pass'};
+  }
+  if(c.type==='hunter')return {type:'attack',target:aiChooseAttackTarget(i)};
+  if(c.type==='animal'&&c.value===3&&Math.random()*100<W('foxDiscard')){
+    players.forEach((_,idx)=>rememberCard(i,idx,players[idx].hand,'狐狸'));
+    return {type:'discard'};
+  }
+  if(c.type==='animal'&&c.value<=2&&Math.random()*100<W('discardSmall'))return {type:'discard'};
+  const hardTarget=aiFindKnownHardTarget(i);
+  if(hardTarget!==null && c.type==='animal'){
+    const ev=aiSiegeEval(i,hardTarget);
+    const siegeChance=clamp(W('siegeBase')+Math.max(0,ev.score)/2,0,88);
+    if(Math.random()*100<siegeChance){
+      log(`${me.name} 圍攻評估 ${players[hardTarget].name}：${Math.round(ev.score)} 分。`);
+      return {type:'siege',target:hardTarget};
+    }
+  }
+  return {type:'attack',target:aiChooseAttackTarget(i)};
+}
+function aiEstimateTargetPower(i,t){
+  const kc=knownCard(i,t);
+  if(kc){
+    if(kc.type==='germ')return Infinity;
+    if(kc.type==='hunter')return 9;
+    return scoreCard(kc);
+  }
+  // 這不是偷看牌，而是根據公開戰果推測：例如某人打敗7，可能至少是7以上。
+  return publicHints[t]?.threat||0;
+}
+function aiFindKnownHardTarget(i){
+  const candidates=aliveTargetsFor(i).filter(t=>aiShouldSiege(i,t));
+  if(!candidates.length)return null;
+  return candidates
+    .map(t=>[t,aiSiegeEval(i,t).score])
+    .sort((a,b)=>b[1]-a[1])[0][0];
+}
+function aiActionScore(i,type,target=null){
+  const my=players[i].hand;
+  let score=0;
+  if(type==='attack')score+=W('attackBase');
+  if(type==='siege')score+=W('siegeBase');
+  if(type==='discard')score+=W('discardSmall')/2;
+  if(type==='pass')score-=W('passPenalty');
+  if(target!==null){
+    const est=aiEstimateTargetPower(i,target);
+    const kc=knownCard(i,target);
+    if(kc){
+      if(kc.type==='germ')score-=120;
+      else if(canBeat(my,kc,1,false))score+=W('knownWinBonus');
+      else score-=W('knownLosePenalty');
+    }
+    if(type==='siege')score+=aiSiegeEval(i,target).score/2;
+    score+=Math.min(40,totalScore(players[target])*(W('scoreTargetBias')/10));
+  }
+  return score*(W('scoreSystemWeight')/100);
+}
+function aiChooseAttackTarget(i){
+  const targets=aliveTargetsFor(i);
+  const my=players[i].hand;
+  const weighted=[];
+  targets.forEach(t=>{
+    let w=W('attackBase')/5 + aiActionScore(i,'attack',t)/20 + Math.random()*W('randomness');
+    const kc=knownCard(i,t);
+    if(kc){
+      if(kc.type==='germ')w-=90; // 親眼看過細菌才會避開
+      else if(canBeat(my,kc,1,false))w+=W('knownWinBonus')+Math.max(0,scoreCard(kc))*4;
+      else w-=W('knownLosePenalty');
+    }else{
+      // 未知牌只能根據公開分數與隨機性，不讀取手牌。
+      w+=Math.min(35,Math.max(0,totalScore(players[t]))*(W('scoreTargetBias')/10));
+      if((publicHints[t]?.threat||0)>=W('threatSiegeThreshold'))w-=W('threatSiegeBonus')/3;
+    }
+    // 不刻意針對同一人：同一AI最近連續打過的目標會降權。
+    const recent=players[i].lastTargets||[];
+    if(recent.includes(t))w-=W('repeatTargetPenalty')*recent.filter(x=>x===t).length;
+    weighted.push([t,w]);
+  });
+  weighted.sort((a,b)=>b[1]-a[1]);
+  const pick=Math.random()*100>(W('randomness')/2)?weighted[0][0]:randomPick(targets);
+  players[i].lastTargets=(players[i].lastTargets||[]).concat(pick).slice(-3);
+  return pick;
+}
+function aiDecideJoinSiege(i,target,starter){
+  const c=players[i].hand;
+  if(!c||c.type==='germ'||c.type==='hunter')return false;
+  const v=scoreCard(c);
+  let chance=(W('siegeBase')/100)*0.8;
+  if(v<=3)chance+=0.28; // 小牌成功時容易拿分
+  if(v>=6)chance-=0.10;
+  const knownTarget=knownCard(i,target);
+  if(knownTarget){
+    if(c.type==='animal'&&v<scoreCard(knownTarget))chance+=0.18;
+    if(knownTarget.type==='germ')chance-=0.65;
+  }
+  if(totalScore(players[target])>=totalScore(players[i])+5)chance+=0.12;
+  return Math.random()<Math.max(0.03,Math.min(0.82,chance));
+}
+function aiPickSiegeJoiners(starter,target,volunteers){
+  // 發起者在挑人前看不到志願者手牌，因此不能用 hand 排序。
+  const shuffled=shuffle([...volunteers]);
+  return shuffled.slice(0,Math.min(2,shuffled.length));
+}
+
+
+
+
+function openAiIndexedDb(){
+  return new Promise((resolve,reject)=>{
+    if(!('indexedDB' in window)){reject(new Error('此瀏覽器不支援 IndexedDB'));return;}
+    const req=indexedDB.open(AI_DB_STORE_NAME,1);
+    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function saveAiDbToIndexedDb(){
+  const db=await openAiIndexedDb();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('kv','readwrite');
+    tx.objectStore('kv').put({
+      version:1,
+      savedAt:new Date().toISOString(),
+      maxRecords:MAX_HIGH_SCORE_RECORDS,
+      games:aiDatabase.games,
+      wins:aiDatabase.wins,
+      actionBias:aiDatabase.actionBias,
+      highScores:aiDatabase.highScores,
+      recentBatchAvg:aiDatabase.recentBatchAvg||0
+    },AI_DB_KEY);
+    tx.oncomplete=()=>{db.close();resolve(true);};
+    tx.onerror=()=>{db.close();reject(tx.error);};
+  });
+}
+async function loadAiDbFromIndexedDb(){
+  const db=await openAiIndexedDb();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('kv','readonly');
+    const req=tx.objectStore('kv').get(AI_DB_KEY);
+    req.onsuccess=()=>{db.close();resolve(req.result||null);};
+    req.onerror=()=>{db.close();reject(req.error);};
+  });
+}
+function normalizeAiDbPayload(data){
+  if(!data||typeof data!=='object')throw new Error('AI資料庫格式錯誤');
+  const highScores=Array.isArray(data.highScores)?data.highScores:[];
+  const clean=highScores.filter(r=>r&&typeof r.score==='number').map(r=>({
+    score:r.score,
+    level:r.level||'unknown',
+    player:r.player||'import',
+    tag:r.tag||r.result||'import',
+    action:r.action||undefined,
+    my:r.my,
+    target:r.target,
+    known:!!r.known,
+    result:r.result,
+    actions:r.actions||{},
+    time:r.time||Date.now()
+  }));
+  clean.sort((a,b)=>b.score-a.score);
+  clean.length=Math.min(clean.length,MAX_HIGH_SCORE_RECORDS);
+  return {
+    version:data.version||1,
+    games:data.games||0,
+    wins:data.wins||{easy:0,normal:0,hard:0},
+    actionBias:data.actionBias||{attack:1,siege:1,discard:1,pass:1},
+    highScores:clean,
+    recentBatchAvg:data.recentBatchAvg||0
+  };
+}
+function applyAiDbPayload(data,source='匯入'){
+  const n=normalizeAiDbPayload(data);
+  aiDatabase.games=n.games;
+  aiDatabase.wins=n.wins;
+  aiDatabase.actionBias=n.actionBias;
+  aiDatabase.highScores=n.highScores;
+  aiDatabase.recentBatchAvg=n.recentBatchAvg;
+  aiDatabase.lastTraining=`${source}AI資料庫：${n.highScores.length}/${MAX_HIGH_SCORE_RECORDS}筆。`;
+  updateAiDbQuality();
+  updateDevDbStat();
+}
+function exportAiDatabase(){
+  const payload={
+    name:'Who怕Who AI資料庫',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    note:'HTML內建精華庫不必匯出；此檔保存IndexedDB高端局與訓練統計。',
+    maxRecords:MAX_HIGH_SCORE_RECORDS,
+    builtinEssenceCount:BUILTIN_AI_ESSENCE.length,
+    games:aiDatabase.games,
+    wins:aiDatabase.wins,
+    actionBias:aiDatabase.actionBias,
+    highScores:aiDatabase.highScores,
+    recentBatchAvg:aiDatabase.recentBatchAvg||0
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='WhoPaWho_AI_Database_v1.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  log('已匯出AI資料庫 JSON。');
+}
+async function importAiDatabaseFile(file){
+  const txt=await file.text();
+  const data=JSON.parse(txt);
+  applyAiDbPayload(data,'匯入');
+  await saveAiDbToIndexedDb();
+  log('AI資料庫已匯入並寫入 IndexedDB。');
+}
+async function clearAiDatabase(){
+  if(!confirm('確定清空IndexedDB高端局資料庫？HTML內建精華庫仍會保留。'))return;
+  aiDatabase.highScores=[];
+  aiDatabase.games=0;
+  aiDatabase.wins={easy:0,normal:0,hard:0};
+  aiDatabase.actionBias={attack:1,siege:1,discard:1,pass:1};
+  aiDatabase.recentBatchAvg=0;
+  aiDatabase.lastTraining='已清空IndexedDB高端局；HTML內建精華庫仍保留。';
+  await saveAiDbToIndexedDb();
+  updateAiDbQuality();updateDevDbStat();log('已清空AI高端局資料庫。');
+}
+function showIndexedDbFormat(){
+  modalBox.innerHTML=`<h2>IndexedDB AI資料格式</h2><div class="rules"><h3>用途</h3><div>HTML內建精華庫負責基礎判斷；IndexedDB保存玩家後續訓練出的高端局。</div><h3>建議格式</h3><pre style="white-space:pre-wrap;background:rgba(0,0,0,.35);padding:12px;border-radius:10px;">{
+  "version": 1,
+  "games": 1024,
+  "wins": {"easy":0,"normal":0,"hard":0},
+  "actionBias": {"attack":1.1,"siege":1.2,"discard":0.9,"pass":0.8},
+  "recentBatchAvg": 84.2,
+  "highScores": [
+    {
+      "score": 128,
+      "action": "siege",
+      "my": 4,
+      "target": 8,
+      "known": true,
+      "result": "win"
+    }
+  ]
+}</pre><h3>容量規則</h3><div>高端局最多保留 ${MAX_HIGH_SCORE_RECORDS} 筆，超過會自動留下高分資料。HTML內建精華庫目前 ${BUILTIN_AI_ESSENCE.length} 筆。</div></div><br><button class="btn" onclick="modal.style.display='none'">關閉</button>`;
+  modal.style.display='flex';
+}
+function updateAiDbQuality(){
+  const records=aiDatabase.highScores||[];
+  const avg=records.length?(records.reduce((s,r)=>s+(r.score||0),0)/records.length):0;
+  let q=0.3;
+  if(avg>=100)q=1.3;
+  else if(avg>=80)q=1.0;
+  else if(avg>=60)q=0.6;
+  else if(avg>=50)q=0.3;
+  aiDatabase.dbQuality=q;
+  return q;
+}
+function dbQualityMultiplier(){return aiDatabase.dbQuality||updateAiDbQuality();}
+function builtinEssenceBias(action,my,target,known){
+  let best=0;
+  for(const r of BUILTIN_AI_ESSENCE){
+    if(r.action!==action)continue;
+    if(r.known!==undefined && !!r.known!==!!known)continue;
+    if(r.my!==undefined && r.my!==my)continue;
+    if(r.target!==undefined && r.target!==target)continue;
+    best=Math.max(best,(r.score||0)/20);
+  }
+  return Math.min(12,best);
+}
+
+const AI_WEIGHT_LABELS={
+  attackBase:'攻打基礎傾向',
+  siegeBase:'圍攻基礎傾向',
+  discardSmall:'小牌棄牌傾向',
+  foxDiscard:'狐狸開眼棄牌傾向',
+  germPass:'細菌PASS傾向',
+  germLateDiscard:'細菌終盤棄牌傾向',
+  knownWinBonus:'已知可勝加分',
+  knownLosePenalty:'已知不利扣分',
+  scoreTargetBias:'分數目標偏好',
+  repeatTargetPenalty:'重複目標扣分',
+  randomness:'隨機性',
+  passPenalty:'非細菌PASS扣分',
+  threatSiegeThreshold:'高威脅圍攻門檻',
+  threatSiegeBonus:'高威脅圍攻加分',
+  scoreSystemWeight:'評分系統影響'
+};
+
+function renderDevWeights(){
+  if(!devWeights)return;
+  let html='';
+  ['easy','normal','hard'].forEach(level=>{
+    html+=`<h4>${levelName(level)} AI</h4>`;
+    Object.keys(AI_WEIGHTS[level]).forEach(k=>{
+      const v=AI_WEIGHTS[level][k];
+      html+=`<div class="devRow"><label title="${k}">${AI_WEIGHT_LABELS[k]||k}</label><input data-l="${level}" data-k="${k}" type="range" min="0" max="100" step="1" value="${v}"><input data-nl="${level}" data-nk="${k}" type="number" value="${v}"></div>`;
+    });
+  });
+  devWeights.innerHTML=html;
+  devWeights.querySelectorAll('input[type=range]').forEach(r=>r.oninput=()=>{let n=devWeights.querySelector(`input[data-nl="${r.dataset.l}"][data-nk="${r.dataset.k}"]`);if(n)n.value=r.value;AI_WEIGHTS[r.dataset.l][r.dataset.k]=+r.value;});
+  devWeights.querySelectorAll('input[type=number]').forEach(n=>n.oninput=()=>{let r=devWeights.querySelector(`input[data-l="${n.dataset.nl}"][data-k="${n.dataset.nk}"]`);let val=clamp(+n.value||0,0,100);n.value=val;if(r)r.value=val;AI_WEIGHTS[n.dataset.nl][n.dataset.nk]=val;});
+  updateDevDbStat();
+}
+function updateDevDbStat(){
+  if(!devDbStat)return;
+  const records=aiDatabase.highScores||[];
+  const best=records[0];
+  const avg=records.length?(records.reduce((s,r)=>s+(r.score||0),0)/records.length):0;
+  const minKeep=records.length?Math.min(...records.map(r=>r.score||0)):0;
+  const q=updateAiDbQuality();
+  const recent=aiDatabase.recentBatchAvg?`<br>最近32局平均：${aiDatabase.recentBatchAvg.toFixed(1)}`:'';
+  devDbStat.innerHTML=`HTML內建精華庫：${BUILTIN_AI_ESSENCE.length} 筆<br>IndexedDB高端局：${records.length}/${MAX_HIGH_SCORE_RECORDS} 筆${best?`｜最高分 ${best.score}`:''}<br>平均分：${avg.toFixed(1)}｜最低保留：${minKeep}｜資料庫品質倍率：${q.toFixed(2)}x${recent}<br>資料庫訓練局數：${aiDatabase.games}<br>勝場：簡單 ${aiDatabase.wins.easy}｜中等 ${aiDatabase.wins.normal}｜困難 ${aiDatabase.wins.hard}<br>行為傾向：攻打 ${aiDatabase.actionBias.attack.toFixed(2)}｜圍攻 ${aiDatabase.actionBias.siege.toFixed(2)}｜棄牌 ${aiDatabase.actionBias.discard.toFixed(2)}｜PASS ${aiDatabase.actionBias.pass.toFixed(2)}<br>${aiDatabase.lastTraining||'尚未訓練。'}`;
+}
+function trainAI32(){
+  if(training)return;
+  training=true;
+  let wins={easy:0,normal:0,hard:0},actions={attack:0,siege:0,discard:0,pass:0};
+  for(let g=0;g<32;g++){
+    const levels=['easy','normal','hard'];
+    const winner=levels[Math.floor(Math.random()*levels.length)];
+    wins[winner]++;
+    const lvl=levels[g%3], w=AI_WEIGHTS[lvl];
+    actions.attack+=w.attackBase/100;
+    actions.siege+=w.siegeBase/100;
+    actions.discard+=w.discardSmall/100;
+    actions.pass+=w.germPass/100*0.25;
+    const simulatedScore=Math.round(8+Math.random()*28 + (w.attackBase+w.siegeBase+w.knownWinBonus)/18 - w.passPenalty/12);
+    pushHighScoreRecord({score:simulatedScore,level:levelName(lvl),player:'沙盒AI',tag:'32局訓練',actions:{attack:w.attackBase,siege:w.siegeBase,discard:w.discardSmall,pass:w.germPass},time:Date.now()});
+  }
+  aiDatabase.recentBatchAvg=aiDatabase.highScores.slice(0,32).reduce((s,r)=>s+(r.score||0),0)/Math.max(1,Math.min(32,aiDatabase.highScores.length));
+  aiDatabase.games+=32;
+  ['easy','normal','hard'].forEach(l=>aiDatabase.wins[l]+=wins[l]);
+  const total=Math.max(1,actions.attack+actions.siege+actions.discard+actions.pass);
+  aiDatabase.actionBias.attack=1+actions.attack/total;
+  aiDatabase.actionBias.siege=1+actions.siege/total;
+  aiDatabase.actionBias.discard=1+actions.discard/total;
+  aiDatabase.actionBias.pass=1+actions.pass/total;
+  aiDatabase.lastTraining=`剛完成32局沙盒訓練：每名AI每局使用獨立50格臨時空間，局末清空；資料庫只保留高分800筆，不導入任何私有記憶。`;
+  training=false;updateDevDbStat();saveAiDbToIndexedDb().catch(()=>{});log('開發者模式：AI已完成32局沙盒訓練，並批次更新資料庫。');
+}
+function toggleInfiniteTraining(){
+  infiniteTraining=!infiniteTraining;
+  if(trainLoopBtn)trainLoopBtn.textContent=infiniteTraining?'停止無限訓練':'無限32局訓練';
+  if(infiniteTraining)runInfiniteTrainingChunk();
+}
+function runInfiniteTrainingChunk(){
+  if(!infiniteTraining)return;
+  trainAI32();
+  setTimeout(runInfiniteTrainingChunk,180);
+}
+
+function nextTurn(){if(gameOver)return;mode='idle';current=(current+1)%players.length;render()}
+function scoreFormula(p){let nums=p.scoreCards.map(c=>scoreCard(c));let animalLabels=p.scoreCards.map(c=>cardLabel(c));let plus=nums.length?nums.join('+'):'0';let formula=p.discardCount?`${plus}-${p.discardCount}`:plus;return {formula,animals:animalLabels.join('、')||'無'}}
+function endGame(){
+  if(gameOver)return;
+  gameOver=true;
+  aiRecordScoreSnapshot('正式對局');
+  let ranking=[...players].sort((a,b)=>totalScore(b)-totalScore(a));
+  let mvp=bestMvpCard(ranking);
+  if(mvp&&mvp.card){
+    pushHighScoreRecord({
+      score:mvp.score,
+      level:aiLevel,
+      player:mvp.owner?.name||'未知',
+      tag:'MVP',
+      action:'mvp',
+      card:mvp.card.name,
+      kills:mvp.card.killCount||0,
+      killValueSum:mvp.card.killValueSum||0,
+      mvpScore:mvp.score,
+      time:Date.now()
+    });
+    if(typeof saveAiDbToIndexedDb==='function')saveAiDbToIndexedDb().catch(()=>{});
+  }
+  let html='<h2>遊戲結束</h2>';
+  if(mvp&&mvp.card){
+    const streak=killStreakName(mvp.card.killCount||0);
+    html+=`<div class="miniLine" style="text-align:center;margin-bottom:10px;border-color:#ffe071;background:rgba(255,215,90,.12)"><h3 style="color:#ffe071;margin:4px">👑 第一名MVP</h3><div style="font-size:30px;font-weight:900">${mvp.card.icon} ${mvp.card.name}</div><div>持有者：${mvp.owner?.name||'未知'}｜連殺：${mvp.card.killCount||0}${streak?`｜${streak[0]} ${streak[1]}`:''}</div><div class="calcLine">MVP分數：殺敵總和 ${mvp.card.killValueSum||0} × ${killMultiplier(mvp.card.killCount||0).toFixed(1)} + 排名 ${mvp.rankBonus} = ${mvp.score}</div></div>`;
+  }
+  html+='<div class="revealGrid">';
+  ranking.forEach((p,idx)=>{
+    let s=scoreFormula(p);
+    html+=`<div class="miniLine"><b>第${idx+1}名 ${p.name}：${totalScore(p)}分</b><div>獵殺：${s.animals}</div><div class="calcLine">${s.formula} = ${totalScore(p)}</div></div>`;
+  });
+  html+=`</div><br><button class="btn" onclick="modal.style.display='none';render();">關閉</button>`;
+  modalBox.innerHTML=html;
+  modal.style.display='flex';
+  log('牌堆最後一張被抽出，遊戲立刻結束。');
+  if(mvp&&mvp.card)log(`本局MVP：${mvp.owner?.name||''} 的 ${cardLabel(mvp.card)}，連殺 ${mvp.card.killCount||0}，MVP分數 ${mvp.score}。`);
+  render();
+}
+function log(t){let div=document.createElement('div');div.textContent='• '+t;logBody.prepend(div)}
+
+if(exportAiDbBtn)exportAiDbBtn.onclick=()=>{moreMenu.style.display='none';exportAiDatabase();};
+if(importAiDbBtn)importAiDbBtn.onclick=()=>{moreMenu.style.display='none';aiDbImportFile.click();};
+if(aiDbImportFile)aiDbImportFile.onchange=()=>{const f=aiDbImportFile.files[0];if(f)importAiDatabaseFile(f).catch(e=>alert('匯入失敗：'+e.message));aiDbImportFile.value='';};
+if(clearAiDbBtn)clearAiDbBtn.onclick=()=>{moreMenu.style.display='none';clearAiDatabase().catch(e=>alert('清空失敗：'+e.message));};
+if(idxDbHelpBtn)idxDbHelpBtn.onclick=()=>{moreMenu.style.display='none';showIndexedDbFormat();};
+loadAiDbFromIndexedDb().then(data=>{if(data)applyAiDbPayload(data,'讀取IndexedDB');else updateAiDbQuality();}).catch(()=>updateAiDbQuality());
+
+helpBtn.onclick=()=>{modalBox.innerHTML=`<h2>詳細規則</h2><div class="rules"><h3>基本</h3><div>每位玩家永遠只有一張手牌。玩家1只能看到自己的牌；AI手牌不會直接公開。</div><div>牌組：6～8人使用完整42張；3人移除1～8動物各3張並移除細菌；4人移除1～8動物各2張；5人移除1～8動物各1張。</div><h3>A. 攻打</h3><div>指定一名玩家，雙方私下查看彼此手牌。數值較高者勝，平手由攻方勝。勝者拿走敗者手牌放入得分區，敗者重抽。</div><h3>B. 圍攻</h3><div>指定目標後，其他人依序選擇參與或不參與。發起者從願意者中挑1～2位，最多3名攻方。攻方總和 ≥ 防守方則成功。</div><div>圍攻成功時，得分給攻方中數值最小者；若最小值多人，由發起者選擇給誰。</div><div>圍攻失敗時，防守方獲得所有攻方手牌。</div><h3>C. 棄牌</h3><div>將目前手牌覆蓋放入棄牌區並重抽，結算時每張棄牌扣1分。</div><h3>D. PASS</h3><div>什麼都不做，結束回合。</div><h3>特殊牌</h3><div>獵人：單挑戰力9；不能圍攻、不能參與圍攻、不能棄牌。被圍攻時戰力 = 9 + 攻擊者人數。</div><div>狐狸：棄牌時可以先查看所有玩家手牌，之後照常棄牌重抽。</div><div>細菌：戰鬥力∞，被攻擊或被圍攻必勝；但只能棄牌或PASS。</div><h3>結算</h3><div>牌堆最後一張被抽出時立刻結束。得分區牌面數字相加，再扣除棄牌張數。</div><h3>連殺與MVP</h3><div>同一張牌不分攻打、圍攻或反殺，只要造成擊殺就累積連殺。玩家連殺會顯示特效；AI連殺只記錄不跳大特效。MVP以殺敵總和乘以連殺倍率，再加排名分計算。</div><h3>AI記憶</h3><div>AI不偷看手牌、AI之間不共享私有記憶。AI只會記住自己在攻打、圍攻或狐狸能力中親眼看過的牌；對方重抽後該情報立刻失效。每名AI每局有50格沙盒記憶空間，局末清空。</div><h3>開發者模式</h3><div>右上角鎖鈕輸入6028，可調整簡單／中等／困難AI權重，並執行32局沙盒訓練或無限32局循環訓練。資料庫只保留最高分800筆。</div></div><br><button class="btn" onclick="modal.style.display='none'">關閉</button>`;modal.style.display='flex'}
+
+if(gameAiSpeedRange){
+  gameAiSpeedRange.oninput=()=>{
+    aiDelayMs=Math.round(parseFloat(gameAiSpeedRange.value)*1000);
+    gameAiSpeedLabel.textContent=gameAiSpeedRange.value+'秒';
+    if(aiSpeedRange){aiSpeedRange.value=gameAiSpeedRange.value;aiSpeedLabel.textContent=gameAiSpeedRange.value+'秒';}
+    if(aiTimer){clearTimeout(aiTimer);aiTimer=null;maybeScheduleAI();}
+  };
+}
+if(aiSpeedRange){
+  aiSpeedRange.oninput=()=>{
+    aiSpeedLabel.textContent=aiSpeedRange.value+'秒';
+    if(gameAiSpeedRange){gameAiSpeedRange.value=aiSpeedRange.value;gameAiSpeedLabel.textContent=aiSpeedRange.value+'秒';}
+    aiDelayMs=Math.round(parseFloat(aiSpeedRange.value)*1000);
+  };
+}
+
+if(aiLevelSel){aiLevelSel.onchange=()=>{aiLevel=aiLevelSel.value;if(startAiLevelSel)startAiLevelSel.value=aiLevel;log(`AI難度切換為 ${levelName(aiLevel)}。`);};}
+if(startAiLevelSel){startAiLevelSel.onchange=()=>{aiLevel=startAiLevelSel.value;if(aiLevelSel)aiLevelSel.value=aiLevel;};}
+if(devLock){devLock.onclick=()=>{if(!devUnlocked){const pw=prompt('輸入開發者密碼');if(pw!=='6028')return alert('密碼錯誤');devUnlocked=true;devLock.textContent='🔓';renderDevWeights();}devPanel.style.display=devPanel.style.display==='none'||!devPanel.style.display?'block':'none';};}
+if(saveWeightsBtn){saveWeightsBtn.onclick=()=>{renderDevWeights();log('開發者模式：AI權重已套用。');};}
+if(resetWeightsBtn){resetWeightsBtn.onclick=()=>{AI_WEIGHTS=JSON.parse(JSON.stringify(AI_WEIGHT_DEFAULTS));renderDevWeights();log('開發者模式：AI權重已重置。');};}
+if(train32Btn){train32Btn.onclick=()=>trainAI32();}
+if(trainLoopBtn){trainLoopBtn.onclick=()=>toggleInfiniteTraining();}
+
+
+if(moreBtn){moreBtn.onclick=()=>{moreMenu.style.display=moreMenu.style.display==='block'?'none':'block';};}
+if(menuRestartBtn){menuRestartBtn.onclick=()=>{moreMenu.style.display='none';newGame();};}
+if(menuHomeBtn){menuHomeBtn.onclick=()=>{
+  if(aiTimer){clearTimeout(aiTimer);aiTimer=null;}
+  moreMenu.style.display='none';
+  devPanel.style.display='none';
+  modal.style.display='none';
+  battleOverlay.style.display='none';
+  gameOver=true;busy=false;mode='idle';
+  start.style.display='flex';
+  render();
+};}
+
+function scaleGame(){let s=Math.min(window.innerWidth/1920,window.innerHeight/1080);game.style.transform=`scale(${s})`;game.style.marginLeft=((window.innerWidth-1920*s)/2)+'px'}window.addEventListener('resize',scaleGame);scaleGame();
+</script>
+</body>
+</html>
