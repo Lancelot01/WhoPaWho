@@ -1,0 +1,1 @@
+WhoPaWho_AI_Database_v1.json匯進去會加入高端局的數據，但就算沒匯入HTML本身也有頂尖局的數據，都會給AI參考，而且我認為這次AI算很聰明，不弱！
